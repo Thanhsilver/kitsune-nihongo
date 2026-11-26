@@ -9,6 +9,7 @@ const four = (c, f, pool) => { const a = f(c); const ds = shuffle([...new Set((p
 // Kanji: phần nghe dùng từ ví dụ, nên đáp án cũng là từ ví dụ (audio và đáp án luôn khớp nhau)
 export const listenWord = c => c.type === 'kanji' ? c.k.ew : c.w
 export const typesFor = (c, { speak = true } = {}) => {
+  if (c.type === 'grammar') return ['cloze', 'cloze', 'gmean', 'glisten', 'sort']
   const t = ['mc', 'rev', 'listen', 'type']
   if (hasMN(c)) t.push('pic')
   if (c.type === 'word' && c.icon) t.push('img', 'imgpick')
@@ -16,8 +17,20 @@ export const typesFor = (c, { speak = true } = {}) => {
   if (speak && micOn()) t.push('speak')
   return t
 }
+const pick = a => a[Math.floor(Math.random() * a.length)]
+const exOf = e => ({ jp: e[0], rd: e[1], vi: e[2] })
+const viPool = c => ITEMS.filter(x => x.type === 'grammar' && x.id !== c.id).flatMap(x => x.g.ex.map(e => e[2]))
+function makeGQ(c, t) {
+  const g = c.g
+  if (t === 'cloze') { const [sent, ans, ds, vi, rd] = pick(g.cloze); return { c, t, sent, opts: shuffle([ans, ...ds]), want: ans, vi, say: rd, full: sent.replace('＿＿', ans) } }
+  const e = exOf(pick(t === 'sort' ? g.ex.filter(x => x[0].includes('|')) : g.ex))
+  if (t === 'sort') return { c, t, parts: e.jp.split('|'), ex: e, say: e.rd }
+  const ds = shuffle([...new Set(viPool(c))].filter(v => v !== e.vi)).slice(0, 3)
+  return { c, t, ex: e, opts: shuffle([e.vi, ...ds]), want: e.vi, say: e.rd }
+}
 export function makeQ(c, t) {
   t = t || shuffle(typesFor(c))[0]
+  if (c.type === 'grammar') return makeGQ(c, ['cloze', 'gmean', 'glisten', 'sort'].includes(t) ? t : 'cloze')
   if (t === 'mc') return { c, t, opts: four(c, meanOf), want: meanOf(c) }
   if (t === 'rev' || t === 'pic') return { c, t, opts: four(c, glyph), want: glyph(c) }
   if (t === 'listen') return { c, t, opts: four(c, listenWord), want: listenWord(c), say: c.say }
@@ -44,5 +57,5 @@ export const typeOK = (q, v) => {
   if (q.c.type === 'kana' && q.c.w === 'を' && vnorm(v) === 'o') return true
   return answerMatches(v, q.want, q.c.r)
 }
-export const QLABEL = { mc: 'Chọn nghĩa đúng', rev: 'Chọn chữ đúng', listen: 'Nghe và chọn', pic: 'Nhìn gợi ý đoán chữ', img: 'Hình này là từ nào?', imgpick: 'Chọn hình đúng', type: 'Gõ lại từ trí nhớ', sort: 'Sắp xếp thành câu', speak: 'Đọc to và chấm phát âm' }
+export const QLABEL = { mc: 'Chọn nghĩa đúng', rev: 'Chọn chữ đúng', listen: 'Nghe và chọn', pic: 'Nhìn gợi ý đoán chữ', img: 'Hình này là từ nào?', imgpick: 'Chọn hình đúng', type: 'Gõ lại từ trí nhớ', sort: 'Sắp xếp thành câu', speak: 'Đọc to và chấm phát âm', cloze: 'Điền vào chỗ trống', gmean: 'Chọn nghĩa của câu', glisten: 'Nghe câu và chọn nghĩa' }
 export { shortMean, targetsOf }

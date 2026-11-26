@@ -12,7 +12,7 @@ export const nextNode = s => {
 }
 export const regionProgress = (s, r) => ({ done: r.nodes.filter(x => nodeDone(s, x)).length, n: r.nodes.length })
 // Bài đã thành thạo: mọi mục trong bài đều đã nhớ chắc
-export const nodeMastered = (s, n) => n.kind === 'lesson' && nodeDone(s, n) && n.items.every(id => mastered1(s, id))
+export const nodeMastered = (s, n) => (n.kind === 'lesson' || n.kind === 'grammar') && nodeDone(s, n) && n.items.every(id => mastered1(s, id))
 export const dueItems = s => dueList(s)
 export const mastered = (s, list) => list.filter(i => mastered1(s, i.id)).length
 export const viewedCount = (s, list) => list.filter(i => s.viewed[i.id] || seen(s, i.id)).length

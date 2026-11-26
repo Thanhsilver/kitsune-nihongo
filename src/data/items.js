@@ -1,6 +1,7 @@
 import { KANA, GRID, KJ, V, KAMN, JMN, PIC } from './core.js'
 import { EX } from './examples.js'
 import { DAK, YOON, EXT, EXT_EX } from './kana2.js'
+import { GRAMMAR } from './grammar.js'
 
 export const LEVELS = [
   { id: 'nm', name: 'Nhập môn', sub: 'Hiragana & Katakana' },
@@ -31,7 +32,8 @@ for (const [key, k, r, how] of EXT) MK[k] = { parts: k.length > 1 ? [[k[0], ''],
 const kanjiItems = KJ.map(k => ({ id: 'K' + k.c, type: 'kanji', w: k.c, k, lv: k.lv, say: k.er, cat: 'kanji' }))
 const wordItems = V.map(v => { const e = EX[v.w] || []; return { ...v, type: 'word', say: v.h, cat: v.t, ex: e[0] ? { jp: e[0], rd: e[1], vi: e[2] } : null, icon: e[3] || null } })
 
-export const ITEMS = [...kanaItems.map(i => ({ ...i, grp: 'base' })), ...dakItems, ...yoonItems, ...extItems, ...kanjiItems, ...wordItems]
+const gramItems = GRAMMAR.map(g => ({ id: 'G:' + g.id, type: 'grammar', gid: g.id, g, w: g.title, m: g.short, say: g.ex[0][1], lv: 'n5', cat: 'gram' }))
+export const ITEMS = [...kanaItems.map(i => ({ ...i, grp: 'base' })), ...dakItems, ...yoonItems, ...extItems, ...kanjiItems, ...wordItems, ...gramItems]
 export const BY_ID = Object.fromEntries(ITEMS.map(i => [i.id, i]))
 export const itemsOf = (lv, type) => ITEMS.filter(i => i.lv === lv && (!type || i.type === type))
 

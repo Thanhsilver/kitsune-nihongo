@@ -40,6 +40,7 @@ const ICONS = {
   stop: <><rect x="7" y="7" width="10" height="10" rx="2.5" fill="#fff" /></>,
   guide: <><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z" fill={M} {...S} /><path d="M4 21V5M8 7h6M8 10h4" {...S} /></>,
   crown: <><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z" fill={Y} {...S} /><circle cx="12" cy="14.5" r="1.6" fill="#E85D75" /></>,
+  grammar: <><rect x="3" y="4" width="18" height="16" rx="4" fill={Y} {...S} /><text x="12" y="15.5" textAnchor="middle" fontSize="8.5" fontWeight="700" fill="#303345" fontFamily="Noto Sans JP">は を</text></>,
   quiz: <><rect x="4" y="3" width="16" height="18" rx="3" fill={Y} {...S} /><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.5v.7M12 17h.01" {...S} /></>,
 }
 export default function Icon({ name, size = 24, className = '' }) {

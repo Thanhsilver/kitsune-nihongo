@@ -22,9 +22,9 @@ const GAMES = [
   ['speak', 'Luyện phát âm', 'Đọc to, app nghe và chấm điểm phát âm.', 'mic', 'bg-sakura-50 dark:bg-primary/10'],
   ['mix', 'Trắc nghiệm tổng hợp', '15 câu trộn mọi dạng bài.', 'quiz', 'bg-[#FFF3CC] dark:bg-[#3a3214]'],
 ]
-const poolOf = lv => lv === 'nm' ? ITEMS.filter(i => i.type === 'kana') : ITEMS.filter(i => i.lv === lv)
+const poolOf = lv => lv === 'nm' ? ITEMS.filter(i => i.type === 'kana') : ITEMS.filter(i => i.lv === lv && i.type !== 'grammar')
 // Câu hỏi ôn tập theo đúng kỹ năng đến hạn
-const SK_TYPES = { recog: ['mc', 'rev', 'pic', 'img', 'imgpick'], listen: ['listen'], recall: ['type', 'sort'], speak: ['speak'] }
+const SK_TYPES = { recog: ['mc', 'rev', 'pic', 'img', 'imgpick', 'cloze', 'gmean'], listen: ['listen', 'glisten'], recall: ['type', 'sort'], speak: ['speak'] }
 const reviewQ = ({ id, sk }) => { const c = BY_ID[id]; if (!c) return null; const ok = typesFor(c).filter(t => SK_TYPES[sk].includes(t)); if (!ok.length) return null; return makeQ(c, shuffle(ok)[0]) }
 const wordsOf = lv => ITEMS.filter(i => i.type === 'word' && i.lv === (lv === 'nm' ? 'n5' : lv))
 const weak = (list, n) => shuffle(list).sort((a, b) => (getState().box[a.id] || 0) - (getState().box[b.id] || 0)).slice(0, Math.min(list.length, n * 2)).sort(() => Math.random() - .5).slice(0, n)

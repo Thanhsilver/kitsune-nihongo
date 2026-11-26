@@ -15,7 +15,7 @@ export default function Stats() {
   const mx = Math.max(s.goal, ...last7.map(x => x.v))
   const acc = s.stats.ans ? Math.round(s.stats.ok / s.stats.ans * 100) : 0
   const lessonsDone = Object.keys(s.lessons).length, lessonsAll = REGIONS.reduce((a, r) => a + r.nodes.filter(n => n.kind !== 'chest').length, 0)
-  const groups = [['Hiragana', ITEMS.filter(i => i.type === 'kana' && i.cat === 'h')], ['Katakana', ITEMS.filter(i => i.type === 'kana' && i.cat === 'k')], ['Kanji N5', ITEMS.filter(i => i.type === 'kanji' && i.lv === 'n5')], ['Kanji N4', ITEMS.filter(i => i.type === 'kanji' && i.lv === 'n4')], ['Từ vựng N5', ITEMS.filter(i => i.type === 'word' && i.lv === 'n5')], ['Từ vựng N4', ITEMS.filter(i => i.type === 'word' && i.lv === 'n4')]]
+  const groups = [['Hiragana', ITEMS.filter(i => i.type === 'kana' && i.cat === 'h')], ['Katakana', ITEMS.filter(i => i.type === 'kana' && i.cat === 'k')], ['Kanji N5', ITEMS.filter(i => i.type === 'kanji' && i.lv === 'n5')], ['Kanji N4', ITEMS.filter(i => i.type === 'kanji' && i.lv === 'n4')], ['Từ vựng N5', ITEMS.filter(i => i.type === 'word' && i.lv === 'n5')], ['Từ vựng N4', ITEMS.filter(i => i.type === 'word' && i.lv === 'n4')], ['Ngữ pháp N5', ITEMS.filter(i => i.type === 'grammar')]]
   const heat = v => v === 0 ? 'bg-ink/5 dark:bg-white/5' : v < s.goal / 2 ? 'bg-sakura-200' : v < s.goal ? 'bg-sakura' : 'bg-primary'
   return (
     <div className="space-y-6">

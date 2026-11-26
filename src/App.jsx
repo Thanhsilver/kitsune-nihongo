@@ -14,14 +14,15 @@ import Play from './pages/Play.jsx'
 import Stats from './pages/Stats.jsx'
 import Settings from './pages/Settings.jsx'
 import Lesson from './pages/Lesson.jsx'
+import Grammar from './pages/Grammar.jsx'
 import Onboarding from './pages/Onboarding.jsx'
 
 export const NAV = [
   ['home', 'Trang chủ', 'home'], ['map', 'Lộ trình JLPT', 'map'], ['kana', 'Bảng chữ cái', 'kana'], ['kanji', 'Kanji', 'kanji'],
-  ['vocab', 'Từ vựng', 'cards'], ['write', 'Luyện viết', 'brush'], ['games', 'Trò chơi & Quiz', 'game'], ['stats', 'Thành tích', 'trophy'], ['settings', 'Cài đặt', 'gear'],
+  ['vocab', 'Từ vựng', 'cards'], ['grammar', 'Ngữ pháp', 'grammar'], ['write', 'Luyện viết', 'brush'], ['games', 'Trò chơi & Quiz', 'game'], ['stats', 'Thành tích', 'trophy'], ['settings', 'Cài đặt', 'gear'],
 ]
 const MOBILE = ['home', 'map', 'vocab', 'games', 'stats']
-const PAGES = { home: Home, map: Roadmap, kana: Kana, kanji: Kanji, vocab: Vocab, write: Write2, games: Play, stats: Stats, settings: Settings }
+const PAGES = { home: Home, map: Roadmap, kana: Kana, kanji: Kanji, vocab: Vocab, grammar: Grammar, write: Write2, games: Play, stats: Stats, settings: Settings }
 function Write2(p) { return <Writing {...p} /> }
 
 const readHash = () => { const h = location.hash.slice(1); return PAGES[h] ? h : 'home' }

@@ -22,7 +22,7 @@ const Deco = ({ kind, x, y }) => (
   </svg>
 )
 function NodeBtn({ n, state, stars, onClick, crown }) {
-  const icon = n.kind === 'guide' ? <Icon name="guide" size={40} /> : n.kind === 'station' ? <Icon name="flag" size={38} /> : n.kind === 'chest' ? <Icon name="chest" size={42} /> : ILL[n.icon] ? <Illus id={n.icon} size={50} /> : <span className="jp text-[30px] font-bold">{n.icon}</span>
+  const icon = n.kind === 'grammar' ? <Icon name="grammar" size={42} /> : n.kind === 'guide' ? <Icon name="guide" size={40} /> : n.kind === 'station' ? <Icon name="flag" size={38} /> : n.kind === 'chest' ? <Icon name="chest" size={42} /> : ILL[n.icon] ? <Illus id={n.icon} size={50} /> : <span className="jp text-[30px] font-bold">{n.icon}</span>
   return (
     <button type="button" onClick={onClick} disabled={state === 'locked'} aria-label={n.title}
       className={cx('relative w-[78px] h-[78px] rounded-full grid place-items-center border-[3px] border-b-[7px] transition hover:-translate-y-0.5',
@@ -89,8 +89,8 @@ export default function Roadmap({ openLesson }) {
             {pr && <><Bar value={pr.done} max={pr.n} className="mt-3" /><p className="muted text-sm mt-1">{pr.done}/{pr.n} trạm đã qua</p></>}
             {cur && <div className="mt-4 rounded-3xl bg-sakura-50 dark:bg-primary/10 p-4">
               <p className="text-sm muted">Trạm tiếp theo</p><h3 className="text-lg">{cur.title}</h3>
-              {cur.items && <p className="jp text-lg mt-1 line-clamp-2">{cur.items.slice(0, 10).map(id => BY_ID[id].w).join(' · ')}</p>}
-              <button className="btn-primary w-full mt-3" onClick={() => open(cur, curIdx)}>{cur.kind === 'chest' ? 'Mở rương' : cur.kind === 'station' ? 'Vào thử thách' : cur.kind === 'guide' ? 'Đọc hướng dẫn' : 'Bắt đầu học'}</button>
+              {cur.kind === 'grammar' ? <p className="jp text-lg mt-1">{cur.sub}</p> : cur.items && <p className="jp text-lg mt-1 line-clamp-2">{cur.items.slice(0, 10).map(id => BY_ID[id].w).join(' · ')}</p>}
+              <button className="btn-primary w-full mt-3" onClick={() => open(cur, curIdx)}>{cur.kind === 'chest' ? 'Mở rương' : cur.kind === 'station' ? 'Vào thử thách' : cur.kind === 'guide' ? 'Đọc hướng dẫn' : cur.kind === 'grammar' ? 'Học ngữ pháp' : 'Bắt đầu học'}</button>
             </div>}
           </div>
           <div className="card p-5 space-y-3 text-sm">
@@ -100,6 +100,7 @@ export default function Roadmap({ openLesson }) {
             <div className="flex items-center gap-3"><Icon name="flag" size={34} />Trạm thử thách: cần đúng 80%</div>
             <div className="flex items-center gap-3"><Icon name="chest" size={34} />Rương thưởng: +100 XP</div>
             <div className="flex items-center gap-3"><Icon name="guide" size={34} />Bài hướng dẫn phát âm</div>
+            <div className="flex items-center gap-3"><Icon name="grammar" size={34} />Bài ngữ pháp</div>
             <div className="flex items-center gap-3"><Icon name="crown" size={34} />Thành thạo: mọi mục trong bài đã nhớ chắc</div>
             <p className="muted">Qua bài là xong lần học đầu. Thành thạo đến khi bạn ôn đúng nhiều lần theo lịch ôn tập.</p>
           </div>

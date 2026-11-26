@@ -12,7 +12,7 @@ const TILES = [
   ['kana', 'Bảng chữ cái', 'Hiragana, Katakana, thứ tự nét', 'kana', 'bg-sakura-100 dark:bg-primary/15'],
   ['vocab', 'Từ vựng', 'Flashcard có hình và câu ví dụ', 'cards', 'bg-matcha-50 dark:bg-matcha/10'],
   ['write', 'Luyện viết', 'App chấm từng nét bạn viết', 'brush', 'bg-[#FFF3CC] dark:bg-[#3a3214]'],
-  ['games', 'Trò chơi & Quiz', 'Ghép từ, nghe đoán, xếp câu', 'game', 'bg-[#E8EEFF] dark:bg-[#232a45]'],
+  ['grammar', 'Ngữ pháp N5', '26 mẫu câu, ví dụ có audio', 'grammar', 'bg-[#E8EEFF] dark:bg-[#232a45]'],
 ]
 export default function Home({ openLesson }) {
   const s = useStore()
@@ -66,8 +66,8 @@ export default function Home({ openLesson }) {
         </div>
       </section>
 
-      <section className="card p-5 sm:p-6 grid sm:grid-cols-3 gap-5">
-        {[['Kana', ITEMS.filter(i => i.type === 'kana')], ['Kanji', ITEMS.filter(i => i.type === 'kanji')], ['Từ vựng', ITEMS.filter(i => i.type === 'word')]].map(([n, l]) => (
+      <section className="card p-5 sm:p-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {[['Kana', ITEMS.filter(i => i.type === 'kana')], ['Kanji', ITEMS.filter(i => i.type === 'kanji')], ['Từ vựng', ITEMS.filter(i => i.type === 'word')], ['Ngữ pháp', ITEMS.filter(i => i.type === 'grammar')]].map(([n, l]) => (
           <div key={n}><div className="flex justify-between font-head font-bold"><span>{n}</span><span className="muted tabular-nums">{mastered(s, l)}/{l.length}</span></div>
             <div className="h-3 rounded-full bg-ink/5 dark:bg-white/10 mt-2 relative overflow-hidden"><div className="absolute inset-y-0 left-0 bg-sakura-200 rounded-full" style={{ width: viewedCount(s, l) / l.length * 100 + '%' }} /><div className="absolute inset-y-0 left-0 bg-matcha-600 rounded-full" style={{ width: mastered(s, l) / l.length * 100 + '%' }} /></div>
             <p className="muted text-xs mt-1">{viewedCount(s, l)} đã xem · {mastered(s, l)} thành thạo</p></div>

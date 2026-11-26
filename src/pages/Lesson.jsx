@@ -10,6 +10,7 @@ import Icon from '../components/Icons.jsx'
 import Mascot from '../components/Mascot.jsx'
 import { Celebrate } from '../components/ui.jsx'
 import { RuleCard, PairDrill, RULE } from '../components/Rules.jsx'
+import GrammarLesson from '../components/GrammarLesson.jsx'
 
 // Sao: dưới ngưỡng qua = 0 sao (chưa qua). Qua rồi: 1–3 sao theo độ chính xác.
 export const starsFor = (acc, pass) => acc < pass ? 0 : acc >= .95 ? 3 : acc >= (pass + .95) / 2 ? 2 : 1
@@ -49,6 +50,7 @@ export default function Lesson({ id, onExit }) {
   const pass = station ? .8 : .7
   const qs = useMemo(() => station ? planQuiz(items, { n: n.final ? Math.min(items.length, 25) : Math.min(items.length, 15) }) : planQuiz(items), [id, run])
   useEffect(() => { if (phase === 'learn' && items[k]) markViewed([items[k].id]) }, [k, phase])
+  if (n.kind === 'grammar') return <GrammarLesson gid={n.gid} nodeId={n.id} onExit={onExit} />
   if (n.kind === 'guide') return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-5"><button className="btn-ghost !min-h-[44px] !px-3" onClick={onExit} aria-label="Thoát"><Icon name="back" size={20} /></button><div><p className="muted text-sm">Bài hướng dẫn</p><h1 className="text-[24px] sm:text-[28px] leading-tight">{n.title}</h1></div></div>
