@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body { @apply bg-cream text-ink font-body antialiased; overflow-x: clip; }
+  .dark body { @apply bg-night text-[#EDEBF5]; }
+  h1, h2, h3, .font-head { font-family: Nunito, "Be Vietnam Pro", sans-serif; font-weight: 800; letter-spacing: -.01em; }
+  button { font-family: Nunito, "Be Vietnam Pro", sans-serif; font-weight: 700; }
+  :focus-visible { outline: 3px solid #E85D75; outline-offset: 2px; border-radius: 10px; }
+  * { min-width: 0; }
+}
+@layer components {
+  .card { @apply bg-white rounded-3xl shadow-soft border border-ink/5; }
+  .dark .card { @apply bg-night-card border-night-line shadow-none; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 min-h-[48px] text-[16px] transition active:translate-y-[2px] disabled:opacity-50 disabled:pointer-events-none; }
+  .btn-primary { @apply btn bg-primary text-white shadow-btn hover:bg-primary-600 active:shadow-none; }
+  .btn-soft { @apply btn bg-sakura-100 text-primary-700 hover:bg-sakura-200; }
+  .dark .btn-soft { @apply bg-primary/15 text-sakura; }
+  .btn-ghost { @apply btn border-2 border-ink/10 bg-white text-ink hover:border-primary/50; }
+  .dark .btn-ghost { @apply bg-transparent border-night-line text-[#EDEBF5]; }
+  .btn-matcha { @apply btn bg-matcha text-matcha-700 hover:brightness-95 shadow-[0_4px_0_#8FC4A9] active:shadow-none; }
+  .chip { @apply inline-flex items-center gap-1 rounded-full px-4 min-h-[40px] text-[15px] border-2 border-ink/10 bg-white transition hover:border-primary/40; font-family: Nunito, sans-serif; font-weight: 700; }
+  .dark .chip { @apply bg-night-card border-night-line; }
+  .chip-on { @apply bg-primary border-primary text-white hover:border-primary; }
+  .dark .chip-on { @apply bg-primary border-primary text-white; }
+  .muted { @apply text-ink-soft; }
+  .dark .muted { @apply text-[#A9A7BC]; }
+  .jp { font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif; }
+  .paper { background-color: #fff; background-image: linear-gradient(#FFE3EA 1px, transparent 1px), linear-gradient(90deg, #FFE3EA 1px, transparent 1px); background-size: 28px 28px; background-position: center; }
+  .dark .paper { background-color: #262533; background-image: linear-gradient(#3a3242 1px, transparent 1px), linear-gradient(90deg, #3a3242 1px, transparent 1px); }
+  .stk path { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 4; }
+  .s-ink { stroke: #303345; } .dark .s-ink { stroke: #EDEBF5; }
+  .s-ghost { stroke: #F3DCE2; } .dark .s-ghost { stroke: #3d3a4c; }
+  .s-next { stroke: #FFB7C5; } .dark .s-next { stroke: #6b4a57; }
+  .s-hint { stroke: #E85D75; stroke-dasharray: 3 4; }
+  .s-anim { stroke: #E85D75; }
+  .s-live { stroke: #5FA886; stroke-width: 4.5 !important; }
+  .s-bad { stroke: #E85D75; opacity: .7; transition: opacity .6s; }
+  .num { font: 700 6px Nunito, sans-serif; fill: #E85D75; paint-order: stroke; stroke: #fff; stroke-width: 1.6px; }
+  .dark .num { stroke: #262533; }
+  .flip { perspective: 1400px; }
+  .flip-inner { transition: transform .55s cubic-bezier(.3,.7,.2,1); transform-style: preserve-3d; }
+  .flip.on .flip-inner { transform: rotateY(180deg); }
+  .face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .face-b { transform: rotateY(180deg); }
+  .no-scrollbar { scrollbar-width: none; } .no-scrollbar::-webkit-scrollbar { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+@keyframes fall { 0% { transform: translate3d(0,-10vh,0) rotate(0) } 100% { transform: translate3d(var(--dx),105vh,0) rotate(540deg) } }
+@keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(232,93,117,.45) } 100% { box-shadow: 0 0 0 18px rgba(232,93,117,0) } }
+.pulse-ring { animation: pulseRing 1.6s ease-out infinite; }
