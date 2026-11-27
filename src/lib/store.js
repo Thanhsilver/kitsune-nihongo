@@ -43,7 +43,7 @@ export const addXP = (n) => setState(s => { const t = today(); const days = s.da
 // ---- lặp lại ngắt quãng, tách theo kỹ năng ----
 // recog: nhận diện nghĩa (box/due cũ) · listen: nghe · recall: tự nhớ ra/gõ · speak: nói
 const DAY = 864e5, INT = [6e5, DAY, 3 * DAY, 7 * DAY, 16 * DAY]
-export const SKILL = { mc: 'recog', rev: 'recog', img: 'recog', imgpick: 'recog', pic: 'recog', card: 'recog', listen: 'listen', type: 'recall', sort: 'recall', speak: 'speak', cloze: 'recog', gmean: 'recog', glisten: 'listen' }
+export const SKILL = { mc: 'recog', rev: 'recog', img: 'recog', imgpick: 'recog', pic: 'recog', card: 'recog', listen: 'listen', type: 'recall', sort: 'recall', speak: 'speak', cloze: 'recog', gmean: 'recog', glisten: 'listen', gpat: 'recog' }
 export const SKILL_NAME = { recog: 'Nhận diện', listen: 'Nghe', recall: 'Tự nhớ ra', speak: 'Phát âm' }
 export const boxOf = (s, id, sk = 'recog') => sk === 'recog' ? s.box[id] : s.sk[sk]?.[id]?.[0]
 export const dueOf = (s, id, sk = 'recog') => sk === 'recog' ? s.due[id] : s.sk[sk]?.[id]?.[1]

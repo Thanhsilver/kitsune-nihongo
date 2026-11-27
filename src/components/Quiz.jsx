@@ -17,6 +17,7 @@ function Prompt({ q }) {
   const c = q.c
   if (q.t === 'cloze') return <><div className="jp text-[28px] sm:text-[34px] leading-snug">{q.sent.split('＿＿').map((p, i, a) => <span key={i}>{p}{i < a.length - 1 && <span className="inline-block min-w-[3.2em] mx-1 border-b-4 border-primary text-primary">{' '}</span>}</span>)}</div><p className="muted mt-3">{q.vi}</p><p className="text-sm mt-1 font-head font-bold text-primary/80">{c.w}</p></>
   if (q.t === 'gmean') return <><div className="jp text-[28px] sm:text-[34px] leading-snug">{q.ex.jp.replaceAll('|', '')}</div><div className="jp muted mt-2">{q.ex.rd}</div></>
+  if (q.t === 'gpat') return <><div className="jp text-[28px] sm:text-[34px] leading-snug">{q.ex.jp.replaceAll('|', '')}</div><div className="jp muted mt-2">{q.ex.rd}</div><p className="muted mt-2">{q.ex.vi}</p></>
   if (q.t === 'glisten') return <button type="button" onClick={() => speak(q.say)} className="inline-flex items-center gap-3 rounded-full bg-sakura-100 dark:bg-primary/20 text-primary-700 dark:text-sakura px-8 min-h-[76px] text-lg font-head font-extrabold hover:bg-sakura-200"><Icon name="sound" size={36} />Nghe lại câu</button>
   if (q.t === 'speak') return <><p className="muted mb-2">Đọc to {c.type === 'kanji' ? 'từ' : 'chữ'} này</p><Big>{c.type === 'kanji' ? c.k.ew : c.w}</Big><div className="jp text-xl muted mt-2">{c.type === 'kanji' ? c.k.er : c.type === 'word' ? (c.k ? c.h : '') : ''}</div></>
   if (q.t === 'mc') return <><Big>{c.w}</Big>{c.type === 'word' && c.k && <div className="jp text-xl muted mt-2">{c.h}</div>}</>
@@ -82,7 +83,7 @@ export default function Quiz({ questions, onFinish, onExit, srs = true, title, r
         <span className="font-head font-extrabold tabular-nums text-primary">{res.current.score}/{base}</span>
       </div>
       <div className="card p-5 sm:p-8">
-        <p className="font-head font-extrabold text-primary mb-4 flex flex-wrap items-center gap-2">{q.retry && <span className="chip !min-h-[28px] !px-3 text-xs !border-primary/40 text-primary">Luyện lại câu sai</span>}{title && title !== QLABEL[q.t] ? title + ' · ' : ''}{QLABEL[q.t]}</p>
+        <p className="font-head font-extrabold text-primary mb-4 flex flex-wrap items-center gap-2">{q.retry && <span className="chip !min-h-[28px] !px-3 text-xs !border-primary/40 text-primary">Luyện lại câu sai</span>}{title && title !== QLABEL[q.t] && q.t !== 'gpat' ? title + ' · ' : ''}{QLABEL[q.t]}</p>
         <div className="text-center py-3 sm:py-6 min-h-[150px] grid place-items-center"><div className="w-full"><Prompt q={q} /></div></div>
         {q.t === 'speak' ? (done ? null : <SpeakCheck targets={q.targets} say={q.say} onResult={spoke} onSkip={skip} />)
           : q.t === 'sort' ? <SortQ key={i} q={q} done={done} onCheck={finish} />
@@ -101,7 +102,7 @@ export default function Quiz({ questions, onFinish, onExit, srs = true, title, r
                     className={cx('relative rounded-3xl border-2 border-b-4 px-4 py-3 min-h-[64px] text-left transition flex items-center gap-3 bg-white dark:bg-night',
                       right ? 'border-matcha-600 bg-matcha-50 dark:bg-matcha/20' : wrong ? 'border-primary bg-sakura-50 dark:bg-primary/15 animate-wiggle' : 'border-ink/10 dark:border-night-line hover:border-primary/50 hover:-translate-y-0.5')}>
                     <span className="hidden sm:grid place-items-center w-7 h-7 rounded-lg border-2 border-ink/10 dark:border-night-line text-sm muted shrink-0">{idx + 1}</span>
-                    {q.t === 'imgpick' ? <span className="mx-auto"><Illus id={BY_ID[o].icon} size={96} /></span> : <span className={cx(isJpOpt ? 'jp text-[26px]' : 'text-[17px] font-semibold')}>{o}</span>}
+                    {q.t === 'imgpick' ? <span className="mx-auto"><Illus id={BY_ID[o].icon} size={96} /></span> : <span className={cx(isJpOpt ? 'jp text-[26px]' : q.t === 'gpat' ? 'jp text-[17px] font-semibold text-left' : 'text-[17px] font-semibold')}>{o}</span>}
                   </button>
                 )
               })}

@@ -37,11 +37,11 @@ export function GrammarCard({ g }) {
     </div>
   )
 }
-// Bài học ngữ pháp: đọc giải thích → luyện 6 câu (điền ×2, xếp câu ×2, chọn nghĩa, nghe) → qua 70%
+// Bài học ngữ pháp: đọc giải thích → luyện 7 câu (điền ×2, xếp câu ×2, chọn mẫu, chọn nghĩa, nghe) → qua 70%
 export default function GrammarLesson({ gid, nodeId, onExit }) {
   const g = G_BY[gid], item = BY_ID['G:' + gid], id = nodeId || 'gr_' + gid
   const [phase, setPhase] = useState('learn'), [run, setRun] = useState(0), [res, setRes] = useState(null)
-  const qs = useMemo(() => shuffle(['cloze', 'cloze', 'sort', 'sort', 'gmean', 'glisten'].map(t => makeQ(item, t))), [gid, run])
+  const qs = useMemo(() => shuffle(['cloze', 'cloze', 'sort', 'sort', 'gpat', 'gmean', 'glisten'].map(t => makeQ(item, t))), [gid, run])
   const finish = r => { const acc = r.score / r.total, stars = starsFor(acc, .7); let info = { xp: 0 }; if (stars) { info = recordPass(id, stars, 20); if (acc === 1) bumpStat('perfect') } setRes({ ...r, acc, stars, ...info }); setPhase('done') }
   if (phase === 'quiz') return <Quiz key={run} questions={qs} title={g.title} onExit={onExit} onFinish={finish} />
   return (
@@ -52,7 +52,7 @@ export default function GrammarLesson({ gid, nodeId, onExit }) {
       </div>
       <div className="card p-5 sm:p-8 animate-pop"><GrammarCard g={g} /></div>
       <div className="flex flex-wrap items-center justify-between gap-3 mt-5">
-        <p className="muted text-sm">6 câu luyện tập: điền chỗ trống, xếp câu, chọn nghĩa, nghe. Cần đúng 70%.</p>
+        <p className="muted text-sm">7 câu luyện tập: điền chỗ trống, xếp câu, chọn mẫu đúng, chọn nghĩa, nghe. Cần đúng 70%.</p>
         <button className="btn-primary min-w-[170px]" onClick={() => { markViewed(['G:' + gid]); setPhase('quiz') }}>Luyện tập ngay</button>
       </div>
       {phase === 'done' && res && <Celebrate open title={res.stars ? 'Nắm được mẫu câu rồi!' : 'Gần được rồi!'} mood={res.stars ? 'cheer' : 'sad'} stars={res.stars}
