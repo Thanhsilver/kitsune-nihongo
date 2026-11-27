@@ -16,6 +16,7 @@ import Settings from './pages/Settings.jsx'
 import Lesson from './pages/Lesson.jsx'
 import Grammar from './pages/Grammar.jsx'
 import Onboarding from './pages/Onboarding.jsx'
+import { AuthDialog, AccountButton } from './components/Auth.jsx'
 
 export const NAV = [
   ['home', 'Trang chủ', 'home'], ['map', 'Lộ trình JLPT', 'map'], ['kana', 'Bảng chữ cái', 'kana'], ['kanji', 'Kanji', 'kanji'],
@@ -59,7 +60,7 @@ export default function App() {
   useEffect(() => { const f = () => { setPage(readHash()); setLesson(null); setDrawer(false); setNk(k => k + 1) }; addEventListener('hashchange', f); return () => removeEventListener('hashchange', f) }, [])
   const P = PAGES[page]
   const onboarded = useStore(s => s.onboarded)
-  if (!onboarded) return <><Onboarding onDone={(lv, zero) => { setSetting('lv', lv); location.hash = 'map'; if (zero) setTimeout(() => setLesson('g0'), 60) }} /><EventLayer /></>
+  if (!onboarded) return <><AuthDialog /><Onboarding onDone={(lv, zero) => { setSetting('lv', lv); location.hash = 'map'; if (zero) setTimeout(() => setLesson('g0'), 60) }} /><EventLayer /></>
   const NavItem = ({ id, label, icon, onClick }) => (
     <a href={'#' + id} onClick={onClick} aria-current={page === id ? 'page' : undefined}
       className={'flex items-center gap-3 rounded-2xl px-3 min-h-[48px] font-head font-bold text-[16px] transition ' + (page === id ? 'bg-sakura-100 text-primary-700 dark:bg-primary/20 dark:text-sakura' : 'hover:bg-ink/5 dark:hover:bg-white/5')}>
@@ -70,7 +71,8 @@ export default function App() {
     <div className="flex flex-col h-full p-4 gap-1">
       <a href="#home" className="flex items-center gap-2 px-2 mb-4"><Mascot mood="happy" size={48} /><span className="font-head font-extrabold text-[20px] leading-tight">Kitsune<br /><span className="text-primary">Nihongo</span></span></a>
       <nav className="flex flex-col gap-1">{NAV.map(([id, l, ic]) => <NavItem key={id} id={id} label={l} icon={ic} />)}</nav>
-      <div className="mt-auto card p-4"><TopStats /></div>
+      <div className="mt-auto pt-3"><AccountButton /></div>
+      <div className="card p-4"><TopStats /></div>
       <button className="btn-ghost mt-2" onClick={() => setSetting('dark', !dark)}><Icon name={dark ? 'sun' : 'moon'} size={22} />{dark ? 'Giao diện sáng' : 'Giao diện tối'}</button>
     </div>
   )
@@ -81,6 +83,7 @@ export default function App() {
         <div className="flex items-center gap-3 px-4 h-[60px]">
           <a href="#home" className="flex items-center gap-1.5"><Mascot mood="happy" size={38} /><span className="font-head font-extrabold text-lg">Kitsune</span></a>
           <div className="ml-auto"><TopStats compact /></div>
+          <AccountButton compact />
           <button className="w-11 h-11 grid place-items-center rounded-xl hover:bg-ink/5" aria-label="Mở menu" onClick={() => setDrawer(true)}><Icon name="menu" /></button>
         </div>
       </header>
@@ -92,6 +95,7 @@ export default function App() {
         {MOBILE.map(id => { const [, l, ic] = NAV.find(n => n[0] === id); return <a key={id} href={'#' + id} aria-current={page === id ? 'page' : undefined} className={'flex flex-col items-center justify-center gap-0.5 min-h-[62px] text-[11px] font-head font-bold ' + (page === id ? 'text-primary' : 'muted')}><span className={'grid place-items-center rounded-full w-12 h-8 ' + (page === id ? 'bg-sakura-100 dark:bg-primary/20' : '')}><Icon name={ic} size={24} /></span>{l.split(' ')[0] === 'Trò' ? 'Trò chơi' : l.replace(' JLPT', '').replace('Trang chủ', 'Trang chủ')}</a> })}
       </nav>
       <EventLayer />
+      <AuthDialog />
     </div>
   )
 }

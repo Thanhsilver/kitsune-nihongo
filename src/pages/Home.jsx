@@ -6,6 +6,7 @@ import Mascot from '../components/Mascot.jsx'
 import Icon from '../components/Icons.jsx'
 import { Ring, Bar } from '../components/ui.jsx'
 import { go } from '../App.jsx'
+import { GuestBanner } from '../components/Auth.jsx'
 
 const hello = () => { const h = new Date().getHours(); return h < 11 ? 'Chào buổi sáng' : h < 18 ? 'Chào buổi chiều' : 'Chào buổi tối' }
 const TILES = [
@@ -21,12 +22,13 @@ export default function Home({ openLesson }) {
   const mx = Math.max(s.goal, ...week.map(w => w.v))
   return (
     <div className="space-y-6">
+      <GuestBanner />
       <section className="card overflow-hidden relative">
         <div className="absolute -right-10 -top-10 w-56 h-56 rounded-full bg-sakura-100 dark:bg-primary/10" />
         <div className="absolute right-24 bottom-[-60px] w-40 h-40 rounded-full bg-matcha-50 dark:bg-matcha/10" />
         <div className="relative grid sm:grid-cols-[1fr_auto] items-center gap-4 p-6 sm:p-8">
           <div>
-            <p className="font-head font-bold text-primary">{hello()}! こんにちは</p>
+            <p className="font-head font-bold text-primary">{hello()}{s.name ? ', ' + s.name : ''}! こんにちは</p>
             <h1 className="text-[30px] sm:text-[40px] leading-tight mt-1">Hôm nay mình học gì nào?</h1>
             <p className="muted mt-2 max-w-lg">{nx ? <>Bài tiếp theo trên lộ trình: <b className="text-ink dark:text-white">{nx.node.title}</b> ({nx.region.name}).</> : 'Bạn đã hoàn thành mọi bài đang có. Ôn tập để nhớ lâu nhé!'}</p>
             <div className="flex flex-wrap gap-3 mt-5">

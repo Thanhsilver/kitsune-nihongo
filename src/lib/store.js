@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react'
 import { today, daysAgo } from './util.js'
 
 const KEY = 'kitsune-nihongo-v2'
-const fresh = () => ({
+export const fresh = () => ({
   box: {}, due: {}, sk: { listen: {}, recall: {}, speak: {} }, viewed: {}, unlocks: {}, onboarded: false, level0: '', write: {}, xp: 0, xpDays: {}, days: [], lessons: {}, chests: {}, badges: {},
   stats: { ans: 0, ok: 0, perfect: 0, wroteMem: 0, matchBest: 0, lessons: 0 },
   goal: 50, settings: { dark: null, voice: 'ai', rate: 'slow', script: 'h', lv: 'nm', speak: true }, name: '',
@@ -23,6 +23,8 @@ const subs = new Set()
 let events = []
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) {} }
 export const getState = () => S
+// Thay toàn bộ trạng thái (dùng khi đồng bộ tài khoản)
+export const replaceState = n => { S = { ...fresh(), ...n, stats: { ...fresh().stats, ...(n.stats || {}) }, settings: { ...fresh().settings, ...(n.settings || {}) }, sk: { ...fresh().sk, ...(n.sk || {}) } }; save(); subs.forEach(f => f()) }
 export const setState = fn => { const n = fn(S); S = { ...S, ...n }; save(); checkBadges(); subs.forEach(f => f()) }
 export const subscribe = f => { subs.add(f); return () => subs.delete(f) }
 export const useStore = sel => useSyncExternalStore(subscribe, () => sel ? sel(S) : S)
