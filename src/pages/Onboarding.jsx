@@ -35,7 +35,7 @@ export default function Onboarding({ onDone }) {
             <label className="block text-left max-w-sm mx-auto mt-6"><span className="font-head font-bold">Kitsune nên gọi bạn là gì?</span>
               <input id="ob-name" value={name} onChange={e => setName(e.target.value)} placeholder="Tên của bạn (không bắt buộc)" maxLength={30} className="mt-2 w-full min-h-[52px] rounded-2xl border-2 border-sakura-200 dark:border-night-line bg-white dark:bg-night px-4 text-[16px] outline-none focus:border-primary" /></label>
             <Nav next={() => setStep(1)} label="Bắt đầu" />
-            {cloudReady && <p className="mt-4 text-sm">Đã có tài khoản? <button className="text-primary font-head font-bold underline" onClick={() => openAuth('login')}>Đăng nhập để học tiếp</button></p>}
+            {cloudReady && false && <p className="mt-4 text-sm">Đã có tài khoản? <button className="text-primary font-head font-bold underline" onClick={() => openAuth('login')}>Đăng nhập để học tiếp</button></p>}
           </div>}
           {step === 1 && <div>
             <h2 className="text-[28px] text-center">Bạn đang ở trình độ nào?</h2>

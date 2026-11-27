@@ -17,6 +17,8 @@ import Lesson from './pages/Lesson.jsx'
 import Grammar from './pages/Grammar.jsx'
 import Onboarding from './pages/Onboarding.jsx'
 import { AuthDialog, AccountButton } from './components/Auth.jsx'
+import Welcome from './pages/Welcome.jsx'
+import { useAuth, cloudReady } from './lib/cloud.js'
 
 export const NAV = [
   ['home', 'Trang chủ', 'home'], ['map', 'Lộ trình JLPT', 'map'], ['kana', 'Bảng chữ cái', 'kana'], ['kanji', 'Kanji', 'kanji'],
@@ -60,6 +62,10 @@ export default function App() {
   useEffect(() => { const f = () => { setPage(readHash()); setLesson(null); setDrawer(false); setNk(k => k + 1) }; addEventListener('hashchange', f); return () => removeEventListener('hashchange', f) }, [])
   const P = PAGES[page]
   const onboarded = useStore(s => s.onboarded)
+  const auth = useAuth()
+  // Website: phải đăng nhập mới vào học. Bản xem trước trong Claude (không có mạng ngoài) vẫn học như khách.
+  if (cloudReady && (auth.status === 'loading' || (auth.status === 'in' && !auth.pulled))) return <div className="min-h-full grid place-items-center"><div className="text-center"><Mascot mood="happy" size={110} className="mx-auto animate-floaty" /><p className="muted mt-3 font-head font-bold">Đang tải tiến độ của bạn…</p></div></div>
+  if (cloudReady && auth.status !== 'in') return <><Welcome /><AuthDialog /><EventLayer /></>
   if (!onboarded) return <><AuthDialog /><Onboarding onDone={(lv, zero) => { setSetting('lv', lv); location.hash = 'map'; if (zero) setTimeout(() => setLesson('g0'), 60) }} /><EventLayer /></>
   const NavItem = ({ id, label, icon, onClick }) => (
     <a href={'#' + id} onClick={onClick} aria-current={page === id ? 'page' : undefined}

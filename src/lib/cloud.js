@@ -10,7 +10,7 @@ export const cloudReady = !!(SUPABASE_URL && SUPABASE_KEY) && !inArtifact
 export const sb = cloudReady ? createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } }) : null
 const SITE = typeof location !== 'undefined' ? location.origin + location.pathname : ''
 
-let A = { status: cloudReady ? 'loading' : 'off', user: null, sync: 'idle', at: 0, err: '', dialog: null, recovery: false }
+let A = { status: cloudReady ? 'loading' : 'off', user: null, sync: 'idle', at: 0, err: '', dialog: null, recovery: false, pulled: false }
 const subs = new Set()
 const setA = p => { A = { ...A, ...p }; subs.forEach(f => f()) }
 export const useAuth = () => useSyncExternalStore(f => { subs.add(f); return () => subs.delete(f) }, () => A)
@@ -43,13 +43,14 @@ export const syncNow = () => { clearTimeout(pushTimer); return push() }
 async function pull(user) {
   uid = user.id; setA({ sync: 'saving' })
   const { data, error } = await sb.from('progress').select('data').eq('user_id', uid).maybeSingle()
-  if (error) { setA({ sync: 'error', err: viErr(error) }); return }
+  if (error) { setA({ sync: 'error', err: viErr(error), pulled: true }); return }
   const local = getState(), remote = data?.data || null
   // Máy đang giữ tiến độ của tài khoản khác thì bỏ, còn tiến độ khách thì gộp vào tài khoản
   const base = local.owner && local.owner !== uid ? fresh() : local
   applying = true
   replaceState({ ...mergeState(base, remote), owner: uid, name: remote?.name || local.name || user.user_metadata?.name || '' })
   applying = false
+  setA({ pulled: true })
   await push()
 }
 if (sb) {
@@ -57,9 +58,9 @@ if (sb) {
   sb.auth.onAuthStateChange((ev, session) => {
     const user = session?.user || null
     if (ev === 'PASSWORD_RECOVERY') setA({ dialog: 'newpass', recovery: true })
-    if (user && (ev === 'SIGNED_IN' || ev === 'INITIAL_SESSION') && uid !== user.id) { setA({ status: 'in', user }); setTimeout(() => pull(user), 0) }
+    if (user && (ev === 'SIGNED_IN' || ev === 'INITIAL_SESSION') && uid !== user.id) { setA({ status: 'in', user, pulled: false }); setTimeout(() => pull(user), 0) }
     else if (user) setA({ status: 'in', user })
-    else { if (uid) { applying = true; replaceState({ ...fresh(), onboarded: true, settings: getState().settings }); applying = false } uid = null; setA({ status: 'out', user: null, sync: 'idle' }) }
+    else { if (uid) { applying = true; replaceState({ ...fresh(), settings: getState().settings }); applying = false } uid = null; setA({ status: 'out', user: null, sync: 'idle', pulled: false }) }
   })
   addEventListener('beforeunload', () => { if (A.sync === 'pending') push() })
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && A.sync === 'pending') syncNow() })
