@@ -8,7 +8,8 @@ export const LEVELS = [
   { id: 'n5', name: 'N5', sub: 'Sơ cấp 1' },
   { id: 'n4', name: 'N4', sub: 'Sơ cấp 2' },
 ]
-export const CAT_NAMES = { c: 'Chào hỏi', n: 'Danh từ', v: 'Động từ', a: 'Tính từ', t: 'Thời gian' }
+export const CAT_NAMES = { c: 'Chào hỏi', n: 'Danh từ', v: 'Động từ', a: 'Tính từ', t: 'Thời gian', x: 'Từ khác' }
+export { TOPICS } from './vocab-n5.js'
 
 const kanaItems = KANA.flatMap(c => [
   { id: 'h:' + c.r, type: 'kana', w: c.h, r: c.r, cat: 'h', say: c.h, lv: 'nm', pair: c.k },
@@ -30,7 +31,7 @@ for (const it of dakItems) { const c = it.w.charCodeAt(0), hand = 'ぱぴぷぺ�
 for (const it of yoonItems) MK[it.w] = { parts: [[it.w[0], ''], [it.w[1], 'viết nhỏ']], s: `${it.w[0]} ghép với ${it.w[1]} viết nhỏ, đọc liền một nhịp: ${it.r} (không đọc tách thành hai âm).` }
 for (const [key, k, r, how] of EXT) MK[k] = { parts: k.length > 1 ? [[k[0], ''], [k[1], 'viết nhỏ']] : [['ウ', ''], ['゛', 'tenten']], s: `${how}: âm "${r}" dùng cho từ mượn nước ngoài. Ví dụ: ${EXT_EX[key]}.` }
 const kanjiItems = KJ.map(k => ({ id: 'K' + k.c, type: 'kanji', w: k.c, k, lv: k.lv, say: k.er, cat: 'kanji' }))
-const wordItems = V.map(v => { const e = EX[v.w] || []; return { ...v, type: 'word', say: v.h, cat: v.t, ex: e[0] ? { jp: e[0], rd: e[1], vi: e[2] } : null, icon: e[3] || null } })
+const wordItems = V.map(v => { const e = EX[v.w] || []; return { ...v, type: 'word', say: v.h.replace('〜', ''), cat: v.t, ex: e[0] ? { jp: e[0], rd: e[1], vi: e[2] } : null, icon: e[3] || null } })
 
 const gramItems = GRAMMAR.map(g => ({ id: 'G:' + g.id, type: 'grammar', gid: g.id, g, w: g.title, m: g.short, say: g.ex[0][1], lv: 'n5', cat: 'gram' }))
 export const ITEMS = [...kanaItems.map(i => ({ ...i, grp: 'base' })), ...dakItems, ...yoonItems, ...extItems, ...kanjiItems, ...wordItems, ...gramItems]

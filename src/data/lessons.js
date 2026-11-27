@@ -1,6 +1,7 @@
 import { KANA, KJ, V } from './core.js'
 import { DAK, YOON, EXT, GUIDES } from './kana2.js'
 import { G_BY } from './grammar.js'
+import { TOPICS } from './vocab-n5.js'
 // Lộ trình dạng bản đồ: mỗi vùng (region) có các trạm: lesson (bài học), station (thử thách), chest (rương thưởng)
 const kanaIds = (pref, rs) => rs.map(r => pref + ':' + r)
 const ROWS = [['a', 'i', 'u', 'e', 'o'], ['ka', 'ki', 'ku', 'ke', 'ko', 'sa', 'shi', 'su', 'se', 'so'], ['ta', 'chi', 'tsu', 'te', 'to', 'na', 'ni', 'nu', 'ne', 'no'], ['ha', 'hi', 'fu', 'he', 'ho', 'ma', 'mi', 'mu', 'me', 'mo'], ['ya', 'yu', 'yo', 'ra', 'ri', 'ru', 're', 'ro', 'wa', 'wo', 'n']]
@@ -10,6 +11,13 @@ const K = s => [...s].map(c => 'K' + c)
 const W = (...ws) => ws.map(w => { const v = V.find(x => x.w === w); if (!v) throw new Error('missing ' + w); return v.id })
 
 const L = (id, title, items, icon) => ({ id, kind: 'lesson', title, items, icon })
+// Bài từ vựng theo chủ đề: chia đều thành các bài ≤12 từ; ids cũ (nếu có) giữ cho các bài đầu để không mất tiến độ
+const TICON = { greet: 'wave', people: 'family', body: 'heart', school: 'school', food: 'tea', home: 'laptop', clothes: 'bag', town: 'shop', transport: 'train', time: 'clock', nature: 'mountain', numbers: '数', hobby: 'photo', verb1: 'eat', verb2: 'run', adj: 'big', adjna: 'tall', words: 'think' }
+const TL = (tp, oldIds = []) => {
+  const ws = V.filter(v => v.tp === tp && v.lv === 'n5').map(v => v.id), name = TOPICS.find(t => t[0] === tp)[1]
+  const n = Math.ceil(ws.length / 12), size = Math.ceil(ws.length / n)
+  return Array.from({ length: n }, (_, i) => L(oldIds[i] || 'v_' + tp + (i + 1), n > 1 ? name + ' ' + (i + 1) : name, ws.slice(i * size, (i + 1) * size), TICON[tp]))
+}
 const S = (id, title) => ({ id, kind: 'station', title })
 const C = id => ({ id, kind: 'chest', title: 'Rương thưởng' })
 const GR = (...ids) => ids.map(g => ({ id: 'gr_' + g, kind: 'grammar', gid: g, title: 'Ngữ pháp: ' + G_BY[g].short, sub: G_BY[g].title, items: ['G:' + g], icon: 'grammar' }))
@@ -29,27 +37,23 @@ export const REGIONS = [
     L('k10', 'Katakana mở rộng ファ・ティ…', EXT.map(x => 'k:x' + x[0]), 'ファ'), G('g3'), S('kS', 'Thi thử Katakana'), C('kC'),
   ] },
   { id: 'n5', name: 'Rừng Tre N5', sub: 'Sơ cấp 1', color: '#BFE3D0', nodes: [
-    L('n5a', 'Chào hỏi', W('こんにちは', 'ありがとう', 'すみません', 'おはよう', 'さようなら', 'はい', 'いいえ'), 'wave'),
-    ...GR('g01', 'g02', 'g03', 'g04'),
-    L('n5b', 'Số đếm 1–10', K('一二三四五六七八九十'), '一'),
-    L('n5c', 'Số lớn & tiền', K('百千万円'), '円'), S('n5S1', 'Thử thách: Câu cơ bản & số'), C('n5C1'),
-    L('n5d', 'Các ngày trong tuần', K('日月火水木金土'), '日'),
-    L('n5e', 'Cơ thể', K('人口目手足'), '手'),
-    L('n5f', 'Vị trí & kích thước', K('大小中上下左右'), '上'),
-    ...GR('g05', 'g06', 'g07'), S('n5S2', 'Thử thách: Kanji & chỉ định'), C('n5C2'),
-    L('n5g', 'Người & gia đình', W('私', '人', '先生', '学生', '友達', '家族', '母', '父', '名前'), 'family'),
-    L('n5h', 'Kanji: trường & đời sống', K('男女子学生先年時本食'), '学'),
-    L('n5i', 'Thiên nhiên', [...K('山川'), ...W('山', '川', '木', '天気', '雨', '月', '犬', '猫')], 'mountain'),
-    L('n5j', 'Đồ ăn & nơi chốn', W('水', '魚', '肉', 'お茶', '店', '駅', '電車', '学校', '本'), 'tea'),
-    ...GR('g08', 'g09', 'g10'), S('n5S3', 'Thử thách: Từ vựng & động từ'), C('n5C3'),
-    L('n5k', 'Động từ 1', W('食べる', '飲む', '行く', '来る', '見る'), 'eat'),
-    ...GR('g11', 'g12', 'g13'),
-    L('n5l', 'Động từ 2', W('聞く', '話す', '読む', '書く', '買う'), 'write'),
-    ...GR('g14', 'g15', 'g16'), S('n5S5', 'Thử thách: Trợ từ & rủ rê'), C('n5C5'),
-    L('n5m', 'Tính từ', W('大きい', '小さい', '新しい', '古い', '高い', '安い'), 'big'),
-    ...GR('g17', 'g18', 'g19', 'g20', 'g21'),
-    L('n5n', 'Thời gian', W('今日', '明日', '昨日', '毎日', '時間'), 'clock'),
-    ...GR('g22', 'g23', 'g24', 'g25', 'g26'), S('n5S4', 'Thi thử N5'), C('n5C4'),
+    ...TL('greet', ['n5a']), L('n5b', 'Kanji: số đếm 1–10', K('一二三四五六七八九十'), '一'), L('n5c', 'Kanji: số lớn & tiền', K('百千万円'), '円'),
+    ...GR('g01', 'g02', 'g03', 'g04'), S('n5S1', 'Thử thách 1: Chào hỏi & số'), C('n5C1'),
+    ...TL('people', ['n5g']), L('n5d', 'Kanji: các ngày trong tuần', K('日月火水木金土'), '日'), L('k5a', 'Kanji: gia đình & ngôn ngữ', K('父母友名言語校読書聞話'), '話'),
+    ...GR('g05', 'g06', 'g07'), S('n5S2', 'Thử thách 2: Con người & chỉ định'), C('n5C2'),
+    ...TL('body'), ...TL('school'), L('n5e', 'Kanji: cơ thể', K('人口目手足耳'), '手'), L('n5h', 'Kanji: trường & đời sống', K('男女子学生先年時本食'), '学'),
+    ...GR('g08'), S('n5S3', 'Thử thách 3: Cơ thể & trường học'), C('n5C3'),
+    ...TL('food', ['n5j']), ...TL('home'), L('k5e', 'Kanji: ăn uống & mua sắm', K('見飲休買立車電店'), '買'),
+    ...GR('g09', 'g10', 'g11'), S('n5S5', 'Thử thách 4: Ăn uống & nhà cửa'), C('n5C5'),
+    ...TL('clothes'), ...TL('town'), ...TL('transport'), L('n5f', 'Kanji: vị trí & kích thước', K('大小中上下左右'), '上'), L('k5b', 'Kanji: phương hướng & đi lại', K('東西南北外前後行来出入国'), '東'),
+    ...GR('g12', 'g13', 'g14'), S('n5S6', 'Thử thách 5: Phố phường & đi lại'), C('n5C6'),
+    ...TL('time', ['n5n']), L('k5c', 'Kanji: thời gian', K('今午半分週毎何間'), '今'),
+    ...GR('g15', 'g16'), S('n5S7', 'Thử thách 6: Thời gian'), C('n5C7'),
+    ...TL('nature', ['n5i']), ...TL('numbers'), L('k5d', 'Kanji: thiên nhiên', K('山川雨花天気空魚'), '雨'),
+    ...GR('g17', 'g18', 'g19'), S('n5S8', 'Thử thách 7: Thiên nhiên & số đếm'), C('n5C8'),
+    ...TL('hobby'), ...TL('verb1', ['n5k', 'n5l']), ...GR('g20', 'g21', 'g22'), S('n5S9', 'Thử thách 8: Sở thích & động từ'), C('n5C9'),
+    ...TL('verb2'), ...TL('adj', ['n5m']), ...TL('adjna'), ...TL('words'), L('k5f', 'Kanji: tính chất', K('安高古新長多少白'), '新'),
+    ...GR('g23', 'g24', 'g25', 'g26'), S('n5S4', 'Thi thử N5'), C('n5C4'),
   ] },
   { id: 'n4', name: 'Thị trấn N4', sub: 'Sơ cấp 2', color: '#FFE3B3', nodes: [
     L('n4a', 'Công việc', [...K('会社員仕事'), ...W('会社', '仕事', '会社員')], 'briefcase'),

@@ -1,3 +1,4 @@
+import Mascot from './Mascot.jsx'
 import { useEffect, useState } from 'react'
 import SpeakCheck from './SpeakCheck.jsx'
 import { useMic } from '../lib/mic.js'
@@ -21,7 +22,7 @@ export default function ItemCard({ c, autoSay = true }) {
   useEffect(() => { if (autoSay) speak(c.say) }, [c.id])
   if (c.type === 'word') return (
     <div className="grid sm:grid-cols-[180px_1fr] gap-5 items-center">
-      <div className="rounded-4xl bg-cream dark:bg-white/90 grid place-items-center aspect-square max-w-[180px] mx-auto w-full">{c.icon && <Illus id={c.icon} size={150} />}</div>
+      <div className="rounded-4xl bg-cream dark:bg-white/90 grid place-items-center aspect-square max-w-[180px] mx-auto w-full">{c.icon ? <Illus id={c.icon} size={150} /> : !c.k ? <Mascot mood="happy" size={130} /> : <div className="text-center px-3"><div className={'jp font-medium leading-tight ' + ((c.k || c.h).length > 4 ? 'text-[28px]' : c.k.length > 2 ? 'text-[38px]' : 'text-[56px]')}>{c.k.replace('〜', '')}</div>{c.hv && <div className="text-sm muted mt-1">{c.hv}</div>}</div>}</div>
       <div>
         <span className="chip !min-h-[30px] !px-3 text-xs">{CAT_NAMES[c.cat]}</span>
         <div className="flex items-center gap-3 mt-2"><span className="jp text-[48px] font-medium leading-tight">{c.w}</span><SpeakBtn text={c.say} /></div>

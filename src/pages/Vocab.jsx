@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ITEMS, CAT_NAMES } from '../data/items.js'
+import { ITEMS, CAT_NAMES, TOPICS } from '../data/items.js'
 import { useStore, setSetting, answer, getState, statusOf, markViewed } from '../lib/store.js'
 import { speak } from '../lib/audio.js'
 import { cx, rnd } from '../lib/util.js'
@@ -9,8 +9,9 @@ import Icon from '../components/Icons.jsx'
 
 export default function Vocab() {
   const s = useStore(), lv = s.settings.lv === 'n4' ? 'n4' : 'n5'
-  const [cat, setCat] = useState('all'), [front, setFront] = useState('jp'), [view, setView] = useState('cards')
-  const deck = useMemo(() => ITEMS.filter(i => i.type === 'word' && i.lv === lv && (cat === 'all' || i.cat === cat)), [lv, cat])
+  const [cat, setCat] = useState('all'), [tp, setTp] = useState('all'), [q, setQ] = useState(''), [front, setFront] = useState('jp'), [view, setView] = useState('cards')
+  const deck = useMemo(() => ITEMS.filter(i => i.type === 'word' && i.lv === lv && (cat === 'all' || i.cat === cat) && (tp === 'all' || i.tp === tp)), [lv, cat, tp])
+  const qn = q.trim().toLowerCase(), shownList = qn ? deck.filter(w => [w.w, w.h, w.r, w.m, w.hv].some(x => x && x.toLowerCase().includes(qn))) : deck
   const [cur, setCur] = useState(null), [flip, setFlip] = useState(false)
   const box = id => getState().box[id] || 0
   const pick = (avoid) => { if (!deck.length) return; const min = Math.min(...deck.map(w => box(w.id))); let pool = deck.filter(w => box(w.id) <= min + 1 && w.id !== avoid); if (!pool.length) pool = deck; const lo = Math.min(...pool.map(w => box(w.id))); const c = pool.filter(w => box(w.id) === lo); setCur(c[rnd(c.length)]); setFlip(false) }
@@ -27,20 +28,26 @@ export default function Vocab() {
       <PageHead title="Từ vựng" sub="Lật thẻ để xem nghĩa, câu ví dụ và nghe phát âm." mood="happy"
         right={<Chips items={[['cards', 'Thẻ ghi nhớ'], ['list', 'Danh sách']]} value={view} onChange={setView} />} />
       <div className="flex flex-wrap gap-3 mb-5 items-center">
-        <Chips items={[['n5', 'N5'], ['n4', 'N4']]} value={lv} onChange={v => { setSetting('lv', v); setCat('all') }} />
+        <Chips items={[['n5', 'N5'], ['n4', 'N4']]} value={lv} onChange={v => { setSetting('lv', v); setCat('all'); setTp('all') }} />
+        {lv === 'n5' && <select value={tp} onChange={e => setTp(e.target.value)} aria-label="Chủ đề" className="min-h-[44px] rounded-2xl border-2 border-ink/10 dark:border-night-line bg-white dark:bg-night px-3 font-head font-bold">
+          <option value="all">Tất cả chủ đề ({ITEMS.filter(i => i.type === 'word' && i.lv === 'n5').length} từ)</option>
+          {TOPICS.map(([id, name]) => <option key={id} value={id}>{name} ({ITEMS.filter(i => i.type === 'word' && i.tp === id && i.lv === 'n5').length})</option>)}
+        </select>}
         <span className="w-px h-8 bg-ink/10 hidden sm:block" />
         <Chips items={cats} value={cat} onChange={setCat} />
       </div>
-      {view === 'list' ? (
+      {view === 'list' ? (<>
+        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Tìm từ: tiếng Nhật, romaji hoặc nghĩa…" className="w-full sm:max-w-md mb-4 min-h-[48px] rounded-2xl border-2 border-sakura-200 dark:border-night-line bg-white dark:bg-night px-4 outline-none focus:border-primary" />
+        {!shownList.length && <p className="muted">Không tìm thấy từ nào.</p>}
         <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
-          {deck.map(w => (
+          {shownList.map(w => (
             <button key={w.id} type="button" onClick={() => speak(w.say)} className="card p-4 text-left flex gap-3 items-center hover:-translate-y-0.5 transition">
-              <div className="rounded-2xl bg-cream dark:bg-white/90 shrink-0">{w.icon && <Illus id={w.icon} size={64} />}</div>
+              {w.icon && <div className="rounded-2xl bg-cream dark:bg-white/90 shrink-0"><Illus id={w.icon} size={64} /></div>}
               <div className="min-w-0"><div className="jp text-2xl">{w.w}</div><div className="text-sm muted">{w.k ? w.h + ' · ' : ''}{w.r}</div><div className="font-semibold">{w.m}</div></div>
               {statusOf(s, w.id) === 'mastered' && <span className="ml-auto self-start w-2.5 h-2.5 rounded-full bg-matcha-600 shrink-0" title="Thành thạo" />}
             </button>
           ))}
-        </div>
+        </div></>
       ) : c && (
         <div className="grid lg:grid-cols-[minmax(0,1fr)_300px] gap-6 items-start">
           <div>
@@ -49,8 +56,8 @@ export default function Vocab() {
                 <div className="face absolute inset-0 card flex flex-col items-center justify-center p-6 text-center">
                   <div className="absolute top-5 left-5 flex gap-1.5">{[0, 1, 2, 3].map(i => <i key={i} className={cx('w-3 h-3 rounded-full border-2 border-primary', i < (s.box[c.id] || 0) && 'bg-primary')} />)}</div>
                   <span className="absolute top-4 right-4 chip !min-h-[30px] !px-3 text-xs">{CAT_NAMES[c.cat]}</span>
-                  {front === 'jp' ? <><div className="rounded-4xl bg-cream dark:bg-white/90 p-2 mb-4">{c.icon && <Illus id={c.icon} size={130} />}</div><JP /></>
-                    : <><div className="rounded-4xl bg-cream dark:bg-white/90 p-2 mb-4">{c.icon && <Illus id={c.icon} size={130} />}</div><div className="font-head text-[36px]">{c.m}</div><p className="muted mt-2">Nhớ ra từ tiếng Nhật rồi lật thẻ</p></>}
+                  {front === 'jp' ? <>{c.icon && <div className="rounded-4xl bg-cream dark:bg-white/90 p-2 mb-4"><Illus id={c.icon} size={130} /></div>}<JP /></>
+                    : <>{c.icon && <div className="rounded-4xl bg-cream dark:bg-white/90 p-2 mb-4"><Illus id={c.icon} size={130} /></div>}<div className="font-head text-[36px]">{c.m}</div><p className="muted mt-2">Nhớ ra từ tiếng Nhật rồi lật thẻ</p></>}
                   <p className="muted text-sm absolute bottom-5">Chạm để lật thẻ</p>
                 </div>
                 <div className="face face-b absolute inset-0 card flex flex-col items-center justify-center p-6 text-center">

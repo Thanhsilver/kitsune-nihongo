@@ -5,7 +5,15 @@ import { answerMatches } from './romaji.js'
 // Dạng câu hỏi: mc (chữ → nghĩa) · rev (nghĩa → chữ) · listen (nghe → chữ/từ) · pic (gợi ý → chữ) · img (hình → từ)
 // imgpick (từ → hình) · type (gõ lại) · sort (xếp câu) · speak (đọc to)
 export const peersOf = c => ITEMS.filter(x => x.type === c.type && (c.type !== 'kana' || (x.cat === c.cat && x.grp === c.grp)) && (c.type === 'kana' || x.lv === c.lv))
-const four = (c, f, pool) => { const a = f(c); const ds = shuffle([...new Set((pool || peersOf(c)).map(f))].filter(x => x && x !== a)).slice(0, 3); return shuffle([a, ...ds]) }
+// Phương án nhiễu: bỏ các mục trùng chữ, trùng cách đọc hoặc trùng nghĩa (để chỉ có một đáp án đúng); ưu tiên cùng loại từ
+const clashes = (c, x) => x.id === c.id || x.w === c.w || (x.say && x.say === c.say) || meanOf(x) === meanOf(c)
+const four = (c, f, pool) => {
+  const a = f(c), base = (pool || peersOf(c)).filter(x => !clashes(c, x))
+  const same = c.type === 'word' ? base.filter(x => x.cat === c.cat) : base
+  const src = same.length >= 6 ? same : base
+  const ds = shuffle([...new Set(src.map(f))].filter(x => x && x !== a)).slice(0, 3)
+  return shuffle([a, ...ds])
+}
 // Kanji: phần nghe dùng từ ví dụ, nên đáp án cũng là từ ví dụ (audio và đáp án luôn khớp nhau)
 export const listenWord = c => c.type === 'kanji' ? c.k.ew : c.w
 export const typesFor = (c, { speak = true } = {}) => {
@@ -15,6 +23,8 @@ export const typesFor = (c, { speak = true } = {}) => {
   if (c.type === 'word' && c.icon) t.push('img', 'imgpick')
   if (c.type === 'word' && c.ex && c.ex.jp.includes('|')) t.push('sort')
   if (speak && micOn()) t.push('speak')
+  // Hậu tố đếm (〜まい…): không gõ lại / đọc to riêng lẻ
+  if (c.type === 'word' && c.w.includes('〜')) return t.filter(x => x !== 'type' && x !== 'speak')
   return t
 }
 const pick = a => a[Math.floor(Math.random() * a.length)]

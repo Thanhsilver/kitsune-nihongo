@@ -1,3 +1,5 @@
+import { KJ5B, JMN5B } from './kanji-n5b.js'
+import { parseTopics } from './vocab-n5.js'
 // Dữ liệu gốc: kana, kanji N5/N4, từ vựng, mẹo nhớ, hình tượng hình
 /* ---------- Data ---------- */
 const HR=['あいうえお','かきくけこ','さしすせそ','たちつてと','なにぬねの','はひふへほ','まみむめも','や ゆ よ','らりるれろ','わ   を','ん    '];
@@ -16,7 +18,7 @@ const KJ=[
 ['n4','会','Hội','gặp; hội','カイ','あ(う)','会社','かいしゃ','công ty'],['n4','社','Xã','công ty; xã hội','シャ','やしろ','社長','しゃちょう','giám đốc'],['n4','員','Viên','nhân viên','イン','—','会社員','かいしゃいん','nhân viên công ty'],['n4','仕','Sĩ','làm việc, phục vụ','シ','つか(える)','仕事','しごと','công việc'],['n4','事','Sự','việc','ジ','こと','用事','ようじ','việc bận'],['n4','家','Gia','nhà','カ','いえ・うち','家族','かぞく','gia đình'],['n4','町','Đinh','thị trấn, khu phố','チョウ','まち','下町','したまち','khu phố cũ'],['n4','村','Thôn','làng','ソン','むら','村長','そんちょう','trưởng làng'],['n4','駅','Dịch','nhà ga','エキ','—','駅員','えきいん','nhân viên nhà ga'],['n4','道','Đạo','con đường','ドウ','みち','書道','しょどう','thư pháp'],
 ['n4','近','Cận','gần','キン','ちか(い)','近所','きんじょ','hàng xóm'],['n4','遠','Viễn','xa','エン','とお(い)','遠足','えんそく','dã ngoại'],['n4','朝','Triêu','buổi sáng','チョウ','あさ','朝ご飯','あさごはん','bữa sáng'],['n4','昼','Trú','buổi trưa','チュウ','ひる','昼休み','ひるやすみ','nghỉ trưa'],['n4','夜','Dạ','buổi tối, đêm','ヤ','よる・よ','今夜','こんや','tối nay'],['n4','春','Xuân','mùa xuân','シュン','はる','春休み','はるやすみ','nghỉ xuân'],['n4','夏','Hạ','mùa hè','カ','なつ','夏休み','なつやすみ','nghỉ hè'],['n4','秋','Thu','mùa thu','シュウ','あき','秋風','あきかぜ','gió thu'],['n4','冬','Đông','mùa đông','トウ','ふゆ','冬休み','ふゆやすみ','nghỉ đông'],
 ['n4','走','Tẩu','chạy','ソウ','はし(る)','走者','そうしゃ','người chạy'],['n4','歩','Bộ','đi bộ','ホ','ある(く)','散歩','さんぽ','đi dạo'],['n4','思','Tư','nghĩ','シ','おも(う)','思い出','おもいで','kỷ niệm'],['n4','知','Tri','biết','チ','し(る)','知り合い','しりあい','người quen'],['n4','作','Tác','làm, tạo ra','サク・サ','つく(る)','作文','さくぶん','bài văn'],['n4','使','Sử','sử dụng','シ','つか(う)','大使館','たいしかん','đại sứ quán'],['n4','借','Tá','mượn','シャク','か(りる)','借金','しゃっきん','tiền nợ'],['n4','貸','Thải','cho mượn','タイ','か(す)','貸し出し','かしだし','việc cho mượn'],['n4','持','Trì','cầm, mang','ジ','も(つ)','気持ち','きもち','cảm xúc'],['n4','待','Đãi','chờ','タイ','ま(つ)','招待','しょうたい','lời mời'],['n4','病','Bệnh','bệnh','ビョウ','やまい','病気','びょうき','bị ốm'],['n4','院','Viện','viện','イン','—','病院','びょういん','bệnh viện'],['n4','医','Y','y, chữa bệnh','イ','—','医者','いしゃ','bác sĩ']
-].map(([lv,c,hv,m,on,kun,ew,er,em])=>({lv,c,hv,m,on,kun,ew,er,em}));
+].concat(KJ5B).map(([lv,c,hv,m,on,kun,ew,er,em])=>({lv,c,hv,m,on,kun,ew,er,em}));
 
 const V5=[
 ['','こんにちは','konnichiwa','xin chào','','c'],['','ありがとう','arigatō','cảm ơn','','c'],['','すみません','sumimasen','xin lỗi, làm phiền','','c'],['','おはよう','ohayō','chào buổi sáng','','c'],['','さようなら','sayōnara','tạm biệt','','c'],['','はい','hai','vâng, có','','c'],['','いいえ','iie','không','','c'],
@@ -33,7 +35,11 @@ const V4=[
 ['お願いします','おねがいします','onegaishimasu','làm ơn, nhờ bạn','','c'],['','いらっしゃいませ','irasshaimase','xin mời vào (cửa hàng)','','c']
 ];
 const mkV=(lv,a)=>a.map(([k,h,r,m,hv,t])=>({lv,id:h+k,k,h,r,m,hv,t,w:k||h}));
-export const V=[...mkV('n5',V5),...mkV('n4',V4)];
+const V0=[...mkV('n5',V5),...mkV('n4',V4)];
+// Gộp danh sách N5 đầy đủ: từ đã có giữ dữ liệu cũ (thêm chủ đề, chuyển về N5), từ mới thêm vào cuối
+const VBY=Object.fromEntries(V0.map(v=>[v.id,v]));
+for(const w of parseTopics()){const id=w.h+w.k;if(VBY[id]){VBY[id].tp=w.tp;VBY[id].lv='n5'}else{const v={lv:'n5',id,k:w.k,h:w.h,r:w.r,m:w.m,hv:w.hv,t:w.t,w:w.k||w.h,tp:w.tp};V0.push(v);VBY[id]=v}}
+export const V=V0;
 
 const LVN={nm:'Nhập môn',n5:'N5',n4:'N4'};
 const CATS={nm:{h:'Hiragana',k:'Katakana'},n5:{all:'Tất cả',kanji:'Kanji',c:'Chào hỏi',n:'Danh từ',v:'Động từ',a:'Tính từ',t:'Thời gian'}};
@@ -96,6 +102,7 @@ const PIC={
 '中':'<rect x="16" y="32" width="77" height="44" rx="7" fill="#cfe0ff" '+PO+'/>'+line('M54.5 6 L54.5 98 M43 86 L54.5 100 L66 86','#d9411f',7),
 '小':'<ellipse cx="54.5" cy="52" rx="9" ry="32" fill="#e7c36a" '+PO+'/><ellipse cx="24" cy="70" rx="8" ry="12" fill="#e7c36a" '+PO+'/><ellipse cx="85" cy="70" rx="8" ry="12" fill="#e7c36a" '+PO+'/>'
 };
+Object.assign(JMN,JMN5B);
 const KAMN={};HMN.forEach(([c,o,ohv,s,x])=>KAMN[c]={o,ohv,s,x,kata:false});KMN.forEach(([c,o,ohv,s,x])=>KAMN[c]={o,ohv,s,x,kata:true});
 
 
